@@ -66,16 +66,32 @@ class LocationsModel extends \Asatru\Database\Model {
     }
 
     /**
+     * @param $id
+     * @return string|bool
+     * @throws \Exception
+     */
+    public static function getOutdoorStatus($id)
+    {
+        try {
+            $data = static::raw('SELECT outdoor FROM `@THIS` WHERE id = ?', [$id])->first();
+            return $data !== null ? $data->get('outdoor') : false;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
      * @param $name
      * @param $icon
+     * @param bool $outdoor
      * @return void
      * @throws \Exception
      */
-    public static function addLocation($name, $icon)
+    public static function addLocation($name, $icon, $outdoor = false)
     {
         try {
-            static::raw('INSERT INTO `@THIS` (name, icon) VALUES(?, ?)', [
-                $name, $icon
+            static::raw('INSERT INTO `@THIS` (name, icon, outdoor) VALUES(?, ?, ?)', [
+                $name, $icon, $outdoor
             ]);
         } catch (\Exception $e) {
             throw $e;
@@ -87,14 +103,15 @@ class LocationsModel extends \Asatru\Database\Model {
      * @param $name
      * @param $icon
      * @param $active
+     * @param $outdoor
      * @return void
      * @throws \Exception
      */
-    public static function editLocation($id, $name, $icon, $active)
+    public static function editLocation($id, $name, $icon, $outdoor = false)
     {
         try {
-            static::raw('UPDATE `@THIS` SET name = ?, icon = ?, active = ? WHERE id = ?', [
-                $name, $icon, $active, $id
+            static::raw('UPDATE `@THIS` SET name = ?, icon = ?, outdoor = ? WHERE id = ?', [
+                $name, $icon, $outdoor, $id
             ]);
         } catch (\Exception $e) {
             throw $e;
